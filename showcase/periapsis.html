@@ -94,8 +94,9 @@ h2{font-size:clamp(2.1rem,7vw,5.6rem)}
   text-shadow:0 0 22px var(--void),0 0 10px var(--void),0 0 3px var(--void),0 1px 2px var(--void)
 }
 #sub.on{opacity:1}
+#obj{margin:.7rem 0 0;font-family:var(--voice);font-style:italic;font-size:clamp(1.05rem,1.7vw,1.35rem);color:var(--bone);text-shadow:0 0 14px var(--void),0 0 4px var(--void);transition:opacity 1.2s}
 #hint{
-  position:absolute;left:50%;top:calc(52px + env(safe-area-inset-top,0px));transform:translateX(-50%);margin:0;
+  position:absolute;left:50%;top:calc(96px + env(safe-area-inset-top,0px));transform:translateX(-50%);margin:0;
   font-size:.6rem;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);opacity:0;transition:opacity .8s;white-space:nowrap
 }
 #hint.on{opacity:1}
@@ -110,9 +111,9 @@ h2{font-size:clamp(2.1rem,7vw,5.6rem)}
 
 #nogl{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;font-family:var(--voice);font-size:1.3rem;line-height:1.4}
 #ui.play #title,#ui.cine #title{opacity:0;pointer-events:none}
-#ui:not(.play) #echoes,#ui:not(.play) #tel,#ui:not(.play) #touch{opacity:0;pointer-events:none}
+#ui:not(.play) #echoes,#ui:not(.play) #obj,#ui:not(.play) #tel,#ui:not(.play) #touch{opacity:0;pointer-events:none}
 #ui:not(.play) #touch button{pointer-events:none}
-#ui.cine #tools,#ui.bare #top,#ui.bare #tel,#ui.bare #hint{opacity:0;pointer-events:none}
+#ui.cine #tools,#ui.bare #top,#ui.bare #obj,#ui.bare #tel,#ui.bare #hint{opacity:0;pointer-events:none}
 #ui.bare #tools button{pointer-events:none}
 #stats{font-family:var(--voice);font-style:italic;font-weight:300;font-size:clamp(1.1rem,1.9vw,1.55rem);margin:0;max-width:40ch;line-height:1.35;text-shadow:0 1px 14px var(--void)}
 #stats b{font-family:var(--data);font-style:normal;font-weight:400;font-size:.82em;color:var(--ember);font-variant-numeric:tabular-nums}
@@ -126,7 +127,7 @@ h2{font-size:clamp(2.1rem,7vw,5.6rem)}
   #tel dt{font-size:.5rem}#tel dd{font-size:.68rem}
   .keys{display:none}
   #bFull{display:none}
-  #hint{top:calc(58px + env(safe-area-inset-top,0px));white-space:normal;width:86vw;text-align:center}
+  #hint{white-space:normal;width:86vw;text-align:center}
   #title,#end{bottom:calc(8% + env(safe-area-inset-bottom,0px))}
 }
 @media (prefers-reduced-motion:reduce){#title,#end,#sub,#hint,#pips i{transition-duration:.01s}}
@@ -137,25 +138,27 @@ h2{font-size:clamp(2.1rem,7vw,5.6rem)}
 
 <div id="ui">
   <div id="top">
-    <div id="echoes"><span class="lab">Echoes</span><span id="pips"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+    <div id="echoes"><span class="lab">Lights</span><span id="pips"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
     <div id="tools">
       <button id="bSound" type="button">Sound on</button>
       <button id="bFull" type="button">Fullscreen</button>
     </div>
   </div>
 
+  <p id="obj"></p>
+
   <section id="title">
     <h1>Periapsis</h1>
-    <p class="tag">Seven echoes circle a dead star. Gather them, then fall.</p>
+    <p class="tag">Fly into the seven blue lights. Then fly into the black hole.</p>
     <div class="go">
       <button id="bStart" class="cta" type="button" disabled>Charting the sky</button>
     </div>
     <dl class="keys">
       <dt>Mouse</dt><dd>look around</dd>
-      <dt>W A S D</dt><dd>burn where you look, brake, strafe</dd>
-      <dt>Space</dt><dd>orbit assist, holds you on a circle</dd>
-      <dt>Shift</dt><dd>burn harder</dd>
-      <dt>C</dt><dd>face the dark</dd>
+      <dt>W</dt><dd>fly where you are looking (let go to stop)</dd>
+      <dt>Shift</dt><dd>boost</dd>
+      <dt>F</dt><dd>turn to the nearest light</dd>
+      <dt>S A D</dt><dd>reverse, slide left, slide right</dd>
     </dl>
   </section>
 
@@ -184,8 +187,8 @@ h2{font-size:clamp(2.1rem,7vw,5.6rem)}
   </dl>
 
   <div id="touch" hidden>
-    <button id="tOrbit" type="button">Orbit assist</button>
-    <button id="tBurn" type="button">Burn</button>
+    <button id="tFind" type="button">Find light</button>
+    <button id="tBurn" type="button">Fly</button>
   </div>
 
   <div id="nogl" hidden>This piece needs WebGL 2, which this browser or device does not offer. Try a current desktop browser.</div>
@@ -352,7 +355,7 @@ void main(){
     if(rn<1.){ cap=true; break; }
     if(rn>900.&&dot(p,v)>0.) break;
   }
-  for(int k=0;k<8;k++){ float s=sg[k]*uSh[k].w; col+=uShC[k]*(s*.005+s*s*.00007); }
+  for(int k=0;k<8;k++){ float s=sg[k]*uSh[k].w; col+=uShC[k]*(s*.011+s*s*.00012); }
   vec3 sk=dec(texture(uSky,normalize(v)).rgb);
   float gs=clamp(gO,.5,2.2);
   sk*=gs*gs*vec3(pow(gs,-.8),1.,pow(gs,.8));
@@ -549,16 +552,16 @@ const len = a => Math.hypot(a[0], a[1], a[2]), norm = a => { const l = len(a) ||
 const clamp = (x, a, b) => Math.min(b, Math.max(a, x)), mix = (a, b, t) => a + (b - a) * t;
 const smooth = t => { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); };
 
-const GM = .5, TS = 8, THRUST = .02, ASSIST = .06, DIVE = 12;
+const GM = .5, TS = 8, SPEED = 5.5, BOOST = 10.5, DIVE = 12;
 const SHDEF = [
-  {R:13.6, inc:.12, node:.3, th:2.2, c:[.5,.85,1]},   {R:11.2, inc:-.36, node:1.9, th:.4, c:[.62,.72,1]},
-  {R:9.3, inc:.5, node:4, th:3.6, c:[.78,.62,1]},     {R:7.7, inc:.2, node:5.2, th:5.3, c:[.5,1,.86]},
-  {R:6.4, inc:-.58, node:2.6, th:1.3, c:[.92,.62,1]}, {R:5.3, inc:.3, node:.9, th:4.4, c:[.55,.95,1]},
-  {R:4.3, inc:.14, node:3.3, th:.2, c:[1,.82,.95]},
+  {R:15.5, inc:.12, node:.3, th:2.2, c:[.5,.85,1]},   {R:13, inc:-.36, node:1.9, th:.4, c:[.62,.72,1]},
+  {R:11, inc:.5, node:4, th:3.6, c:[.78,.62,1]},     {R:9.2, inc:.2, node:5.2, th:5.3, c:[.5,1,.86]},
+  {R:7.6, inc:-.58, node:2.6, th:1.3, c:[.92,.62,1]}, {R:6.2, inc:.3, node:.9, th:4.4, c:[.55,.95,1]},
+  {R:4.8, inc:.14, node:3.3, th:.2, c:[1,.82,.95]},
 ];
 const S = {
   mode:'load', time:0, sim:0, tau:0, far:0, dil:1, pos:[17,0,0], vel:[0,0,.18], acc:[0,0,0], yaw:0, pitch:0, fov:.62,
-  fade:-1, fadeTo:-1, fadeRate:1.2, flash:0, world:0, open:0, collected:0, recenter:0, burn:0, expo:1.15, diveT:0, uZ:0, shake:0,
+  beta:[0,0,0], orbitTh:2.4, seek:0, warned:false, fade:-1, fadeTo:-1, fadeRate:1.2, flash:0, world:0, open:0, collected:0, recenter:0, burn:0, expo:1.15, diveT:0, uZ:0, shake:0,
   shards:SHDEF.map(d => ({...d, got:false, pull:0, pos:[0,0,0], w:1})), far42:false, frames:0,
 };
 let skyTex = null, bake = bakeStart(0), bakeDone = null, nextBakeAt = 0;
@@ -569,8 +572,7 @@ function orbit(R, inc, node, th){
   return {pos:add(mul(e1, R * c), mul(e2, R * s)), tan:add(mul(e1, -s), mul(e2, c))};
 }
 function placeStart(){
-  const o = orbit(17, .24, .6, 2.4);
-  S.pos = o.pos; S.vel = mul(o.tan, Math.sqrt(GM * 17) / 16);
+  S.pos = orbit(17, .24, .6, S.orbitTh).pos; S.vel = [0, 0, 0]; S.beta = [0, 0, 0];
   const f = norm(mul(S.pos, -1)); S.yaw = Math.atan2(f[0], f[2]); S.pitch = Math.asin(f[1]);
 }
 placeStart();
@@ -666,25 +668,27 @@ function sfxArrive(){
 
 /* ------------------------------------------------------------------ input */
 const keys = {};
-let locked = false, dragging = false, lastX = 0, lastY = 0, dragId = null;
+let locked = false, dragging = false, lastX = 0, lastY = 0, dragId = null, mouseFly = false;
 addEventListener('keydown', e => {
   if (e.repeat) { if ([' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) e.preventDefault(); return; }
   const k = e.key.length === 1 ? e.key.toLowerCase() : e.key; keys[k] = true;
   if (k === ' ' || k.startsWith('Arrow')) e.preventDefault();
   if (k === 'Enter' && S.mode === 'title') begin();
-  if (k === 'c') S.recenter = .7;
+  if (k === 'c') { S.recenter = .7; S.seek = 0; }
+  if (k === 'f') { S.seek = .8; S.recenter = 0; }
   if (k === 'm') toggleSound();
   if (k === 'h') ui.classList.toggle('bare');
 });
 addEventListener('keyup', e => { const k = e.key.length === 1 ? e.key.toLowerCase() : e.key; keys[k] = false; });
-addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; mouseFly = false; });
 function look(dx, dy, sens){
   if (S.mode !== 'play' && S.mode !== 'drift') return;
-  S.yaw -= dx * sens; S.pitch = clamp(S.pitch - dy * sens, -1.5, 1.5); S.recenter = 0;
+  if ((!dx && !dy) || S.seek > 0 || S.recenter > 0) return;      // an assisted turn finishes before the mouse takes over again
+  S.yaw -= dx * sens; S.pitch = clamp(S.pitch - dy * sens, -1.5, 1.5);
 }
 cv.addEventListener('pointerdown', e => {
   if (S.mode !== 'play' && S.mode !== 'drift') return;
-  if (e.pointerType === 'mouse' && !locked && cv.requestPointerLock) { try { const p = cv.requestPointerLock(); if (p && p.catch) p.catch(() => {}); } catch (_) {} }
+  if (e.pointerType === 'mouse') { if (locked) mouseFly = true; else grabMouse(); }
   dragging = true; dragId = e.pointerId; lastX = e.clientX; lastY = e.clientY;
   try { cv.setPointerCapture(e.pointerId); } catch (_) {}
 });
@@ -692,14 +696,15 @@ cv.addEventListener('pointermove', e => {
   if (locked) { look(e.movementX || 0, e.movementY || 0, .0021); return; }
   if (dragging && e.pointerId === dragId) { look(-(e.clientX - lastX), -(e.clientY - lastY), e.pointerType === 'touch' ? .0042 : .0032); lastX = e.clientX; lastY = e.clientY; }
 });
-const endDrag = e => { if (e.pointerId === dragId) dragging = false; };
+const endDrag = e => { mouseFly = false; if (e.pointerId === dragId) dragging = false; };
+function grabMouse(){ if (cv.requestPointerLock) { try { const p = cv.requestPointerLock(); if (p && p.catch) p.catch(() => {}); } catch (_) {} } }
 cv.addEventListener('pointerup', endDrag); cv.addEventListener('pointercancel', endDrag);
-document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === cv; hint(locked ? '' : (S.mode === 'play' ? 'Click to hold the view, or drag to look' : ''), 5); });
+document.addEventListener('pointerlockchange', () => { locked = document.pointerLockElement === cv; if (!locked) mouseFly = false; hint(locked ? 'Mouse looks. Hold W or the mouse button to fly. Esc frees the mouse.' : (S.mode === 'play' ? 'Drag to look around, or click the view to capture the mouse' : ''), locked ? 9 : 6); });
 function hold(btn, key){
   const on = e => { e.preventDefault(); keys[key] = true; btn.classList.add('held'); }, off = () => { keys[key] = false; btn.classList.remove('held'); };
   btn.addEventListener('pointerdown', on); btn.addEventListener('pointerup', off); btn.addEventListener('pointercancel', off); btn.addEventListener('pointerleave', off);
 }
-hold($('tBurn'), 'w'); hold($('tOrbit'), ' ');
+hold($('tBurn'), 'w'); $('tFind').addEventListener('click', () => { S.seek = .8; S.recenter = 0; });
 if (COARSE) $('touch').hidden = false;
 
 function toggleSound(){ A.on = !A.on; $('bSound').textContent = A.on ? 'Sound on' : 'Sound off'; if (A.ctx) A.master.gain.setTargetAtTime(A.on ? .85 : 0, A.ctx.currentTime, .15); }
@@ -708,7 +713,7 @@ $('bFull').addEventListener('click', () => {
   try { if (document.fullscreenElement) document.exitFullscreen(); else { const p = document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); if (p && p.catch) p.catch(() => {}); } } catch (_) {}
 });
 $('bStart').addEventListener('click', begin);
-$('bDrift').addEventListener('click', () => { $('end').classList.add('gone'); S.mode = 'drift'; ui.className = 'play'; $('echoes').style.opacity = 0; say('No echoes here yet. Only the light.', 5); });
+$('bDrift').addEventListener('click', () => { $('end').classList.add('gone'); S.mode = 'drift'; ui.className = 'play'; $('echoes').style.opacity = 0; objective(); say('Nothing to collect here. Fly anywhere.', 5); });
 $('bAgain').addEventListener('click', restart);
 
 /* ------------------------------------------------------------------ narration */
@@ -716,28 +721,29 @@ let subT = 0, hintT = 0; const queue = [];
 function say(text, dur = 4.6){ const el = $('sub'); el.textContent = text; el.classList.add('on'); clearTimeout(subT); subT = setTimeout(() => el.classList.remove('on'), dur * 1000); }
 function later(fn, s){ const id = setTimeout(fn, s * 1000); queue.push(id); return id; }
 function hint(text, dur){ const el = $('hint'); clearTimeout(hintT); if (!text) { el.classList.remove('on'); return; } el.textContent = text; el.classList.add('on'); hintT = setTimeout(() => el.classList.remove('on'), dur * 1000); }
-const LINES = ['One. The dark hums back.', 'Two.', 'Three. Light bends to listen.', 'Four.', 'Five. The clocks disagree down here.', 'Six. One remains.', 'Seven. The horizon is open. Fall.'];
-const fmt = t => { const s = t / TS, m = Math.floor(s / 60), r = s - m * 60; return String(m).padStart(2, '0') + ':' + r.toFixed(1).padStart(4, '0'); };
+const LINES = ['One. Six to go.', 'Two.', 'Three. Light bends to listen.', 'Four.', 'Five. The clocks disagree down here.', 'Six. One left.', 'All seven. Now fly into the black hole.'];
+function objective(){ const n = 7 - S.collected; $('obj').textContent = S.mode === 'drift' ? 'Free flight. Go anywhere.' : n ? 'Fly into the blue lights. ' + n + ' left.' : 'Now fly into the black hole.'; }
+const fmt = s => { const m = Math.floor(s / 60), r = s - m * 60; return String(m).padStart(2, '0') + ':' + r.toFixed(1).padStart(4, '0'); };
 
 /* ------------------------------------------------------------------ flow */
 function begin(){
   if (S.mode !== 'title') return;
   audioStart(); S.mode = 'play'; ui.className = 'play'; $('echoes').style.opacity = '';
-  S.tau = S.far = 0;
-  later(() => say('Seven echoes circle the dark.', 4.4), .6);
-  later(() => say(COARSE ? 'Drag to look. Hold Burn to fly where you look.' : 'Look at one and burn toward it. Gravity will argue.', 5.2), 5.6);
-  if (!COARSE) hint('Click to hold the view, or drag to look', 7);
+  S.tau = S.far = 0; S.seek = 1.2; objective();
+  if (!COARSE) grabMouse();
+  later(() => say('Seven blue lights circle the black hole. Fly into each one.', 5), .6);
+  later(() => say(COARSE ? 'Drag to look. Hold Fly to move. Let go to stop.' : 'Hold W to fly where you look. Let go to stop. F turns you to the nearest light.', 7), 6.2);
 }
 function collect(i){
   const sh = S.shards[i]; if (sh.got) return;
   sh.got = true; S.collected++; S.flash = 1; sfxCollect(S.collected - 1);
   $('pips').children[S.collected - 1].classList.add('on');
-  say(LINES[S.collected - 1], S.collected === 7 ? 9 : 4.2);
+  say(LINES[S.collected - 1], S.collected === 7 ? 9 : 4.2); objective();
   if (S.collected === 7) S.openTo = 1;
 }
 function lost(){
   S.mode = 'lost'; S.fadeTo = -1; S.fadeRate = 3.5; sfxLost();
-  later(() => { placeStart(); S.mode = 'play'; S.fadeTo = 0; S.fadeRate = .8; say('Not yet. The dark returns you.', 4.5); }, 1.5);
+  later(() => { placeStart(); S.mode = 'play'; S.fadeTo = 0; S.fadeRate = .8; say('You fell in too early. Collect all seven lights first.', 5); }, 1.5);
 }
 function dive(){
   S.mode = 'dive'; S.diveT = 0; S.uZ = 0; S.fade = 1; S.fadeTo = 0; S.fadeRate = 1.1; ui.className = 'cine';
@@ -749,9 +755,9 @@ function dive(){
 function arrive(){
   gl.deleteTexture(skyTex); skyTex = bake.tex; bake = null; S.world = 1; S.open = S.openTo = 0;
   placeStart(); S.mode = 'end'; S.fade = 1; S.fadeTo = 0; S.fadeRate = .45; sfxArrive();
-  $('stats').innerHTML = 'You carried seven echoes through. Your clock ran <b>' + fmt(S.tau) + '</b>. Far from the well, <b>' + fmt(S.far) + '</b> went by.';
+  $('stats').innerHTML = 'You carried all seven lights through. Your clock ran <b>' + fmt(S.tau) + '</b>. Far from the well, <b>' + fmt(S.far) + '</b> went by.';
   later(() => say('Closest approach is also a beginning.', 6), 2.2);
-  const ship = Math.round(S.tau / TS * 10) / 10, far = Math.round(S.far / TS * 10) / 10;
+  const ship = Math.round(S.tau * 10) / 10, far = Math.round(S.far * 10) / 10;
   later(() => { $('end').classList.remove('gone'); logbook(ship, far); }, 6.5);
 }
 /* Shared logbook: each traveller keeps one row, their fastest ship-clock descent. Absent outside a viewer. */
@@ -778,7 +784,7 @@ async function logbook(ship, far){
       const li = document.createElement('li'), me = r.id === uid; if (me) li.className = 'me';
       const cell = (cls, text) => { const sp = document.createElement('span'); sp.className = cls; sp.textContent = text; li.appendChild(sp); };
       cell('rank', String(i + 1)); cell('who', me ? 'You' : ((ps[r.id] && ps[r.id].name) || 'A traveller'));
-      cell('ship', fmt(r.ship * TS)); cell('far', Number.isFinite(r.far) ? 'far ' + fmt(r.far * TS) : '');
+      cell('ship', fmt(r.ship)); cell('far', Number.isFinite(r.far) ? 'far ' + fmt(r.far) : '');
       list.appendChild(li);
     });
     box.hidden = false;
@@ -791,24 +797,24 @@ function restart(){
     bakeDone = () => {
       gl.deleteTexture(skyTex); skyTex = bake.tex; bake = null; S.world = 0; A.major = false; S.collected = 0; S.open = S.openTo = 0;
       S.shards.forEach(s => { s.got = false; s.pull = 0; }); for (const p of $('pips').children) p.classList.remove('on');
-      placeStart(); S.sim = 0; S.tau = S.far = 0; S.mode = 'play'; ui.className = 'play'; $('echoes').style.opacity = ''; S.fadeTo = 0; S.fadeRate = .7;
-      say('Seven echoes circle the dark.', 4.4);
+      placeStart(); S.sim = 0; S.tau = S.far = 0; S.mode = 'play'; ui.className = 'play'; $('echoes').style.opacity = ''; S.fadeTo = 0; S.fadeRate = .7; S.seek = 1.2; objective();
+      say('Seven blue lights circle the black hole. Fly into each one.', 5);
     };
   }, 1.2);
 }
 
 /* ------------------------------------------------------------------ simulation */
-function physics(dt){
-  const n = Math.max(1, Math.ceil(dt / .12)), h = dt / n;
-  for (let i = 0; i < n; i++) {
-    const r = len(S.pos); let k = -GM / (r * Math.pow(Math.max(r - 1, .05), 2));
-    if (r > 42) k -= (r - 42) * .0016 / r;
-    S.vel = add(S.vel, mul(add(mul(S.pos, k), S.acc), h));
-    const sp = len(S.vel); if (sp > .94) S.vel = mul(S.vel, .94 / sp);
-    S.pos = add(S.pos, mul(S.vel, h));
-    const g = Math.sqrt(Math.max(1 - 1 / r, .002)) * Math.sqrt(Math.max(1 - dot(S.vel, S.vel), .01));
-    S.tau += h * g; S.far += h; S.dil = 1 / g;
-  }
+/* Arcade flight: the ship goes where you point it and stops dead when you let go. The hole is a current
+   that exists only inside the danger ring at 3.4 radii. It matches the engine at 1.5 and the boost at 1.1. */
+function pull(r){ return r > 40 ? (r - 40) * .9 : r < 3.4 ? SPEED * 1.6 * Math.pow((3.4 - r) / 2.4, 2) : 0; }
+function fly(dt, want){
+  S.vel = add(S.vel, mul(sub(want, S.vel), 1 - Math.exp(-dt * 5)));
+  const r = len(S.pos), v = add(S.vel, mul(S.pos, -pull(r) / r)), next = add(S.pos, mul(v, dt));
+  S.pos = dot(next, S.pos) <= 0 ? mul(S.pos, .5 / r) : next;                 // never tunnel through the centre
+  let b = mul(v, .3 / BOOST); const bl = len(b); if (bl > .6) b = mul(b, .6 / bl);
+  S.beta = b;
+  const g = Math.sqrt(Math.max(1 - 1 / Math.max(r, 1.001), .002)) * Math.sqrt(1 - dot(b, b));
+  S.tau += dt; S.far += dt / g; S.dil = 1 / g;
 }
 function update(dt){
   S.time += dt; S.frames++;
@@ -840,32 +846,39 @@ function update(dt){
   }
   const B = basis(S.yaw, S.pitch);
 
-  // thrust
-  let acc = [0, 0, 0], burn = 0;
-  if (flying) {
-    const pw = THRUST * (keys.Shift ? 2.2 : 1);
-    let t = [0, 0, 0];
-    if (keys.w) t = add(t, B.f); if (keys.s) t = sub(t, B.f); if (keys.d) t = add(t, B.r); if (keys.a) t = sub(t, B.r);
-    if (keys.e) t = add(t, B.u); if (keys.q) t = sub(t, B.u);
-    if (len(t) > 0) { acc = mul(norm(t), pw); burn = keys.Shift ? 1 : .6; }
-    if (keys[' '] && r > 2.05) {
-      let n = cross(S.pos, S.vel); n = len(n) < 1e-4 ? [0, 1, 0] : norm(n);
-      const tg = norm(cross(n, S.pos)), vc = Math.min(.9, Math.sqrt(GM * r) / (r - 1)), dv = sub(mul(tg, vc), S.vel), l = len(dv);
-      if (l > 1e-4) { acc = add(acc, mul(dv, Math.min(ASSIST, l * .6) / l)); burn = Math.max(burn, Math.min(1, l * 12)); }
-    }
+  // steering help: F turns to the nearest light
+  if (flying && S.seek > 0) {
+    let best = null; for (const s of S.shards) if (!s.got && s.w > 0 && (!best || s.dist < best.dist)) best = s;
+    if (best) {
+      // if the straight line to the light would cross the danger ring, aim around the hole instead
+      let aim = best.pos; const ab = sub(best.pos, S.pos), t = clamp(-dot(S.pos, ab) / Math.max(dot(ab, ab), 1e-6), 0, 1), cp = add(S.pos, mul(ab, t));
+      if (t > 0 && t < 1 && len(cp) < 4.4) aim = mul(len(cp) > .05 ? norm(cp) : [0, 1, 0], 6.5);
+      const d = norm(sub(aim, S.pos)); let dy = Math.atan2(d[0], d[2]) - S.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+      const k = Math.min(1, dt * 6); S.yaw += dy * k; S.pitch += (Math.asin(clamp(d[1], -1, 1)) - S.pitch) * k; S.seek -= dt;
+    } else S.seek = 0;
   }
-  S.acc = acc; S.burn += (burn - S.burn) * Math.min(1, dt * 8);
-  if (S.mode !== 'lost' && S.mode !== 'load') { physics(ds); S.sim += ds; }
+  // flight
+  let want = [0, 0, 0], burn = 0;
+  if (flying) {
+    const boost = keys.Shift || keys[' ']; let t = [0, 0, 0];
+    if (keys.w || mouseFly) t = add(t, B.f); if (keys.s) t = sub(t, B.f); if (keys.d) t = add(t, B.r); if (keys.a) t = sub(t, B.r);
+    if (keys.e) t = add(t, B.u); if (keys.q) t = sub(t, B.u);
+    if (len(t) > 0) { want = mul(norm(t), boost ? BOOST : SPEED); burn = boost ? 1 : .6; }
+  }
+  S.burn += (burn - S.burn) * Math.min(1, dt * 8);
+  if (flying) fly(dt, want);
+  else if (S.mode !== 'lost' && S.mode !== 'load') { S.orbitTh += dt * .04; S.pos = orbit(17, .24, .6, S.orbitTh).pos; S.vel = [0, 0, 0]; S.beta = [0, 0, 0]; }
+  if (S.mode !== 'load') S.sim += ds;
   S.fov += ((.62 + .07 * S.burn) - S.fov) * Math.min(1, dt * 3);
   { const rr = len(S.pos), et = 1.15 * mix(1, .5, Math.exp(-Math.abs(S.pos[1]) / 1.4) * smooth((17 - rr) / 10)); S.expo += (et - S.expo) * Math.min(1, dt * 1.5); }
-  S.shake = RM ? 0 : (S.burn * .0016 + Math.pow(clamp(2.2 / r, 0, 1), 3) * .004);
+  S.shake = RM ? 0 : (S.burn * .0008 + Math.pow(clamp(2.2 / r, 0, 1), 3) * .004);
 
   // echoes
   for (let i = 0; i < 7; i++) {
     const s = S.shards[i]; if (s.got || S.world !== 0) { s.w = 0; continue; }
     const o = orbit(s.R, s.inc, s.node, s.th + .3 * Math.sqrt(GM / (s.R * s.R * s.R)) * S.sim).pos;
     const d = len(sub(o, S.pos));
-    s.pull = clamp(s.pull + (S.mode === 'play' && d < 4.6 ? dt * .85 : -dt * .5), 0, 1);
+    s.pull = clamp(s.pull + (S.mode === 'play' && d < 3.2 ? dt * 1.4 : -dt * .5), 0, 1);
     const k = smooth(s.pull) * s.pull;
     s.pos = add(mul(o, 1 - k), mul(add(S.pos, mul(B.f, 1.3)), k));
     s.w = 1 + .25 * Math.sin(S.time * 3.1 + i * 1.7) + 2 * s.pull;
@@ -877,7 +890,9 @@ function update(dt){
   const r2 = len(S.pos);
   if (S.mode === 'play') {
     if (r2 < 1.06) { if (S.collected === 7) dive(); else lost(); }
-    if (r2 > 44 && !S.far42) { S.far42 = true; say('The signal thins out here. Turn back.', 4.5); }
+    if (r2 > 41 && !S.far42) { S.far42 = true; say('Too far out. Press C to face the black hole.', 4.5); }
+    if (r2 < 3.3 && S.collected < 7 && !S.warned) { S.warned = true; say('Too close. It is pulling you in. Turn away and hold Shift.', 4); }
+    if (r2 > 4.5) S.warned = false;
     if (r2 < 36) S.far42 = false;
   } else if (S.mode === 'drift' && r2 < 1.06) lost(), later(() => { S.mode = 'drift'; }, 1.6);
   audioFrame(r2, S.burn);
@@ -901,7 +916,7 @@ function render(){
     const sx = S.shake * Math.sin(S.time * 71.3), sy = S.shake * Math.cos(S.time * 57.9);
     const B = basis(S.yaw + sx, S.pitch + sy), w = WORLDS[S.world];
     u = pass(P.scene, scene);
-    gl.uniform2f(u.uRes, scene.w, scene.h); gl.uniform3fv(u.uCam, S.pos); gl.uniform3fv(u.uBeta, S.vel);
+    gl.uniform2f(u.uRes, scene.w, scene.h); gl.uniform3fv(u.uCam, S.pos); gl.uniform3fv(u.uBeta, S.beta);
     gl.uniformMatrix3fv(u.uCamM, false, [...B.r, ...B.u, ...B.f]);
     gl.uniform1f(u.uFov, S.fov); gl.uniform1f(u.uTime, S.sim); gl.uniform1f(u.uTemp, w.temp); gl.uniform1f(u.uGain, w.gain);
     gl.uniform1f(u.uOpen, S.open); gl.uniform1f(u.uPix, 2 * S.fov / scene.h); gl.uniform1f(u.uStepK, OPTS.stepK || .11); gl.uniform1f(u.uEnc, HDR ? 0 : 1);
@@ -926,7 +941,7 @@ function render(){
 
 /* ------------------------------------------------------------------ overlay: markers, reticle, orbit map */
 function toShip(n){                    // static-frame direction -> direction as seen from the moving ship
-  const b = S.vel, b2 = dot(b, b); if (b2 < 1e-7) return n;
+  const b = S.beta, b2 = dot(b, b); if (b2 < 1e-7) return n;
   const g = 1 / Math.sqrt(1 - b2), bh = mul(b, 1 / Math.sqrt(b2)), up = mul(n, -1), pa = dot(up, bh);
   const perp = sub(up, mul(bh, pa)), den = 1 - dot(b, up);
   return norm(mul(add(sub(mul(bh, pa), b), mul(perp, 1 / g)), -1 / den));
@@ -940,38 +955,33 @@ function overlay(){
   octx.lineWidth = 1; octx.font = '300 10px "IBM Plex Mono", ui-monospace, monospace'; octx.textAlign = 'center';
   // reticle
   octx.strokeStyle = bone + '.5)'; octx.beginPath(); octx.moveTo(cx - 9, cy); octx.lineTo(cx - 3, cy); octx.moveTo(cx + 3, cy); octx.lineTo(cx + 9, cy); octx.moveTo(cx, cy - 9); octx.lineTo(cx, cy - 3); octx.moveTo(cx, cy + 3); octx.lineTo(cx, cy + 9); octx.stroke();
-  // prograde marker
-  const sp = len(S.vel);
-  if (sp > .01) { const p = proj(mul(S.vel, 1 / sp)); if (p.z > 0 && p.x > 0 && p.x < CW && p.y > 0 && p.y < CH) { octx.strokeStyle = 'rgba(255,180,107,.7)'; octx.beginPath(); octx.arc(p.x, p.y, 6, 0, 6.283); octx.moveTo(p.x - 11, p.y); octx.lineTo(p.x - 6, p.y); octx.moveTo(p.x + 6, p.y); octx.lineTo(p.x + 11, p.y); octx.moveTo(p.x, p.y - 6); octx.lineTo(p.x, p.y - 11); octx.stroke(); } }
   // echo markers
-  const m = 34;
+  const m = 34; let nearest = null;
+  for (const s of S.shards) if (!s.got && s.w > 0 && (!nearest || s.dist < nearest.dist)) nearest = s;
   for (const s of S.shards) {
     if (s.got || s.w <= 0) continue;
     const p = proj(toShip(norm(sub(s.pos, S.pos)))), on = p.z > 0 && p.x > m && p.x < CW - m && p.y > m + 30 && p.y < CH - m;
-    const near = s.dist < 4.6, a = near ? '1)' : '.62)';
-    octx.strokeStyle = ice + a; octx.fillStyle = ice + a;
+    const top = s === nearest, a = top ? '1)' : '.5)';
+    octx.strokeStyle = ice + a; octx.fillStyle = ice + a; octx.lineWidth = top ? 1.6 : 1;
     if (on) {
-      const q = near ? 13 : 9; octx.beginPath(); octx.moveTo(p.x, p.y - q); octx.lineTo(p.x + q, p.y); octx.lineTo(p.x, p.y + q); octx.lineTo(p.x - q, p.y); octx.closePath(); octx.stroke();
-      octx.fillText(s.dist.toFixed(1), p.x, p.y + q + 13);
+      const q = top ? 15 : 9; octx.beginPath(); octx.moveTo(p.x, p.y - q); octx.lineTo(p.x + q, p.y); octx.lineTo(p.x, p.y + q); octx.lineTo(p.x - q, p.y); octx.closePath(); octx.stroke();
+      octx.fillText(top ? 'NEAREST LIGHT  ' + s.dist.toFixed(0) : s.dist.toFixed(0), p.x, p.y + q + 14);
     } else {
       let ang = Math.atan2(-p.ry, p.rx); if (p.z <= 0 && Math.hypot(p.rx, p.ry) < 1e-3) ang = 0;
       const ex = clamp(cx + Math.cos(ang) * 1e4, m, CW - m), ey = clamp(cy + Math.sin(ang) * 1e4, m + 30, CH - m);
       const tx = Math.abs(Math.cos(ang)) > 1e-3 ? (ex - cx) / Math.cos(ang) : 1e9, ty = Math.abs(Math.sin(ang)) > 1e-3 ? (ey - cy) / Math.sin(ang) : 1e9, t = Math.min(tx, ty);
-      const px = cx + Math.cos(ang) * t, py = cy + Math.sin(ang) * t;
-      octx.save(); octx.translate(px, py); octx.rotate(ang); octx.beginPath(); octx.moveTo(8, 0); octx.lineTo(-4, -6); octx.lineTo(-4, 6); octx.closePath(); octx.fill(); octx.restore();
+      const px = cx + Math.cos(ang) * t, py = cy + Math.sin(ang) * t, z = top ? 1.7 : 1;
+      octx.save(); octx.translate(px, py); octx.rotate(ang); octx.beginPath(); octx.moveTo(8 * z, 0); octx.lineTo(-4 * z, -6 * z); octx.lineTo(-4 * z, 6 * z); octx.closePath(); octx.fill(); octx.restore();
     }
   }
+  octx.lineWidth = 1;
   // orbit map, looking down on the disk plane
   const R = CW < 640 ? 50 : 76, mx = 18 + R, my = CH - 18 - R, k = R / 20;
   octx.save(); octx.beginPath(); octx.arc(mx, my, R, 0, 6.283); octx.fillStyle = 'rgba(4,5,10,.4)'; octx.fill(); octx.strokeStyle = bone + '.2)'; octx.stroke(); octx.clip();
   const grad = octx.createRadialGradient(mx, my, 3 * k, mx, my, 15 * k); grad.addColorStop(0, 'rgba(255,180,107,.34)'); grad.addColorStop(1, 'rgba(255,180,107,0)');
   octx.fillStyle = grad; octx.beginPath(); octx.arc(mx, my, 15 * k, 0, 6.283); octx.arc(mx, my, 3 * k, 0, 6.283, true); octx.fill();
   octx.fillStyle = '#000'; octx.beginPath(); octx.arc(mx, my, Math.max(1.5, k), 0, 6.283); octx.fill(); octx.strokeStyle = S.open > .3 ? ice + '.9)' : bone + '.5)'; octx.stroke();
-  octx.setLineDash([2, 3]); octx.strokeStyle = bone + '.3)'; octx.beginPath(); octx.arc(mx, my, 3 * k, 0, 6.283); octx.stroke(); octx.setLineDash([]);
-  // predicted path
-  let p = S.pos.slice(), v = S.vel.slice(); octx.beginPath(); octx.moveTo(mx + p[0] * k, my - p[2] * k);
-  for (let i = 0; i < 260; i++) { const r = len(p); if (r < 1.02 || r > 60) break; const h = .35 + r * .03, g = -GM / (r * Math.pow(Math.max(r - 1, .05), 2)); v = add(v, mul(p, g * h)); p = add(p, mul(v, h)); octx.lineTo(mx + p[0] * k, my - p[2] * k); }
-  octx.strokeStyle = 'rgba(255,180,107,.75)'; octx.stroke();
+  octx.setLineDash([2, 3]); octx.strokeStyle = 'rgba(255,180,107,.8)'; octx.beginPath(); octx.arc(mx, my, 3.4 * k, 0, 6.283); octx.stroke(); octx.setLineDash([]);
   for (const s of S.shards) { if (s.got || s.w <= 0) continue; octx.fillStyle = ice + '.95)'; octx.beginPath(); octx.arc(mx + s.pos[0] * k, my - s.pos[2] * k, 2, 0, 6.283); octx.fill(); }
   const px = mx + clamp(S.pos[0] * k, -R, R), py = my - clamp(S.pos[2] * k, -R, R);
   octx.fillStyle = '#ece5d6'; octx.beginPath(); octx.arc(px, py, 2.6, 0, 6.283); octx.fill();
@@ -979,8 +989,8 @@ function overlay(){
   octx.restore();
 }
 function telemetry(){
-  const r = len(S.pos), v = len(S.vel);
-  $('tR').firstChild.nodeValue = r.toFixed(2); $('tR').className = r < 3 ? 'warn' : '';
+  const r = len(S.pos), v = len(S.beta);
+  $('tR').firstChild.nodeValue = r.toFixed(2); $('tR').className = r < 3.4 ? 'warn' : '';
   $('tV').firstChild.nodeValue = v.toFixed(3);
   $('tD').textContent = '\u00d7' + S.dil.toFixed(S.dil > 10 ? 1 : 3); $('tD').className = S.dil > 1.5 ? 'warn' : '';
   $('tS').textContent = fmt(S.tau); $('tF').textContent = fmt(S.far);
